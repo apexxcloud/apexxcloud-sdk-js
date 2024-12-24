@@ -1,0 +1,48 @@
+{
+  "name": "apexxcloud-sdk-js",
+  "version": "1.0.0",
+  "description": "Official JavaScript SDK for ApexxCloud Storage Service",
+  "main": "dist/sdk.js",
+  "module": "dist/sdk.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/sdk.mjs",
+      "require": "./dist/sdk.js"
+    }
+  },
+  "types": "types/index.d.ts",
+  "files": [
+    "dist",
+    "types",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "test": "jest",
+    "lint": "eslint src/",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "apexxcloud",
+    "storage",
+    "sdk",
+    "browser",
+    "frontend",
+    "upload"
+  ],
+  "author": "ApexxCloud <team@apexxcloud.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "@eslint/js": "^9.17.0",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "eslint": "^8.57.1",
+    "globals": "^15.14.0",
+    "jest": "^29.7.0",
+    "rollup": "^2.79.1"
+  }
+}
