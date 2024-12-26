@@ -7,7 +7,6 @@ class ApexxCloud {
     // Initialize API clients
     this.files = {
       upload: this.uploadFile.bind(this),
-      uploadMultipart: this.uploadMultipart.bind(this),
     };
   }
 
@@ -19,6 +18,7 @@ class ApexxCloud {
       onComplete = () => {},
       onError = () => {},
       onStart = () => {},
+      signal,
     } = {}
   ) {
     try {
@@ -26,6 +26,24 @@ class ApexxCloud {
       formData.append("file", file);
 
       const xhr = new XMLHttpRequest();
+
+      // Setup abort signal handler
+      if (signal) {
+        signal.addEventListener("abort", () => {
+          xhr.abort();
+        });
+
+        // If signal is already aborted, throw error immediately
+        if (signal.aborted) {
+          onError({
+            type: "error",
+            error: new Error("Upload aborted"),
+            originalEvent: event,
+            timestamp: new Date(),
+          });
+          throw new Error("Upload aborted");
+        }
+      }
 
       // Setup progress tracking
       xhr.upload.onprogress = (event) => {

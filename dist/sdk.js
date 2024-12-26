@@ -4,7 +4,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.ApexxCloudSDK = factory());
 })(this, (function () { 'use strict';
 
-  class StorageSDK {
+  class ApexxCloud {
     constructor(config = {}) {
       this.config = {
         baseUrl: config.baseUrl || "https://api.apexxcloud.com"
@@ -124,7 +124,7 @@
     }
   }
 
-  return StorageSDK;
+  return ApexxCloud;
 
 }));
 //# sourceMappingURL=sdk.js.map

@@ -1,5 +1,6 @@
 declare module '@apexxcloud/sdk-js' {
-  interface UploadCallbacks {
+  interface UploadOptions {
+    signal?: AbortSignal;
     onProgress?: (event: {
       loaded: number;
       total: number;
@@ -34,7 +35,7 @@ declare module '@apexxcloud/sdk-js' {
     constructor(config?: Record<string, any>);
     
     files: {
-      upload(signedUrl: string, file: File, callbacks?: UploadCallbacks): Promise<any>;
+      upload(signedUrl: string, file: File, options?: UploadOptions): Promise<any>;
       
     };
   }
