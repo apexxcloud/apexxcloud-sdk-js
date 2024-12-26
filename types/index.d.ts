@@ -30,6 +30,7 @@ declare module '@apexxcloud/sdk-js' {
   }
 
   interface MultipartProgressEvent extends ProgressEvent {
+    type: 'progress';
     part: {
       number: number;
       progress: number;
@@ -37,15 +38,18 @@ declare module '@apexxcloud/sdk-js' {
   }
 
   interface StartEvent extends BaseEvent {
+    type: 'start';
     file: FileInfo;
   }
 
   interface CompleteEvent extends BaseEvent {
+    type: 'complete';
     response: any;
     file: FileInfo;
   }
 
   interface ErrorEvent extends BaseEvent {
+    type: 'error' | 'abort';
     error: Error;
     status?: number;
     phase?: 'start' | 'upload' | 'complete' | 'cancel';
@@ -59,8 +63,12 @@ declare module '@apexxcloud/sdk-js' {
     onStart?: (event: StartEvent) => void;
   }
 
-  interface MultipartUploadOptions extends UploadOptions {
+  interface MultipartUploadOptions {
+    signal?: AbortSignal;
     onProgress?: (event: MultipartProgressEvent) => void;
+    onComplete?: (event: CompleteEvent) => void;
+    onError?: (event: ErrorEvent) => void;
+    onStart?: (event: StartEvent) => void;
     onPartComplete?: (part: { ETag: string; PartNumber: number }) => void;
     partSize?: number;
     concurrency?: number;
