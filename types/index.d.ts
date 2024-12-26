@@ -30,7 +30,7 @@ declare module '@apexxcloud/sdk-js' {
   }
 
  
-  export  default class StorageSDK {
+  export  default class ApexxCloud {
     constructor(config?: Record<string, any>);
     
     files: {

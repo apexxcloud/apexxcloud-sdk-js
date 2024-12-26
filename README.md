@@ -5,53 +5,68 @@ Official JavaScript SDK for ApexxCloud Storage Service.
 ## Installation 
 
 ```bash
-npm install apexxcloud-sdk-js
+npm install @apexxcloud/sdk-js
 ```
-
 
 ## Quick Start
 
 ```javascript
-import StorageSDK from 'apexxcloud-sdk-js';
-const storage = new StorageSDK();
-// Simple file upload
+import ApexxCloud from '@apexxcloud/sdk-js';
+
+const storage = new ApexxCloud({
+  baseUrl: 'https://api.apexxcloud.com' // optional
+});
+
+// Simple file upload using signed URL
 const fileInput = document.querySelector('input[type="file"]');
 const file = fileInput.files[0];
-const signedUrl = 'https://api.apexxcloud.com/...'; // Get from your backend
+
 try {
-const result = await storage.files.upload(signedUrl, file, {
-onStart: (event) => {
-console.log('Upload started:', event);
-},
-onProgress: (event) => {
-console.log(Upload progress: ${event.progress}%);
-},
-onComplete: (event) => {
-console.log('Upload completed:', event);
-},
-onError: (event) => {
-console.error('Upload failed:', event);
-}
-});
+  const result = await storage.files.upload(signedUrl, file, {
+    onStart: (event) => {
+      console.log('Upload started:', event);
+    },
+    onProgress: (event) => {
+      console.log(`Upload progress: ${event.progress}%`);
+    },
+    onComplete: (event) => {
+      console.log('Upload completed:', event);
+    },
+    onError: (event) => {
+      console.error('Upload failed:', event);
+    }
+  });
 } catch (error) {
-console.error('Upload failed:', error);
+  console.error('Upload failed:', error);
 }
-
 ```
-
 
 ## Features
 
 - Simple file upload with progress tracking
-- Multipart upload for large files
 - Detailed progress and status callbacks
-- TypeScript support
 - Browser compatibility
 - Minimal dependencies
 
-## Documentation
+## API Reference
 
-For detailed documentation, visit [docs.apexxcloud.com](https://docs.apexxcloud.com)
+### File Operations
+
+#### Upload a File
+```javascript
+await storage.files.upload(signedUrl, file, {
+  onStart: (event) => {},    // Called when upload begins
+  onProgress: (event) => {}, // Called during upload with progress info
+  onComplete: (event) => {}, // Called when upload completes successfully
+  onError: (event) => {}     // Called if upload fails
+});
+```
+
+## Configuration Options
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| baseUrl | string | No | API base URL (defaults to https://api.apexxcloud.com) |
 
 ## License
 

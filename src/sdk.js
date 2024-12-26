@@ -1,4 +1,4 @@
-class StorageSDK {
+class ApexxCloud {
   constructor(config = {}) {
     this.config = {
       baseUrl: config.baseUrl || "https://api.apexxcloud.com",
@@ -125,4 +125,4 @@ class StorageSDK {
   }
 }
 
-export default StorageSDK;
+export default ApexxCloud;
