@@ -122,20 +122,28 @@
             xhr.open("POST", partUrl);
             xhr.onload = () => {
               if (xhr.status >= 200 && xhr.status < 300) {
-                let etag;
                 try {
                   const response = JSON.parse(xhr.responseText);
-                  etag = response.data?.Etag || `part${partNumber}`;
+                  const partData = response.data;
+                  uploadedBytes += chunk.size;
+                  const part = {
+                    ETag: partData.ETag,
+                    PartNumber: partData.partNumber
+                  };
+                  onPartComplete(part);
+                  resolve(part);
                 } catch (e) {
-                  etag = `part${partNumber}`;
+                  const error = new Error("Invalid JSON response from upload part");
+                  onError({
+                    type: "error",
+                    error,
+                    phase: "upload",
+                    partNumber,
+                    status: xhr.status,
+                    timestamp: new Date()
+                  });
+                  reject(error);
                 }
-                uploadedBytes += chunk.size;
-                const part = {
-                  ETag: etag,
-                  PartNumber: partNumber
-                };
-                onPartComplete(part);
-                resolve(part);
               } else {
                 let errorMessage;
                 try {

@@ -228,20 +228,57 @@ class ApexxCloud {
           xhr.open("POST", completeUrl);
           xhr.setRequestHeader("Content-Type", "application/json");
 
+          // Add upload progress handler
+          xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) {
+              onProgress({
+                loaded: file.size, // At this point, all parts are uploaded
+                total: file.size,
+                progress: 100, // Complete
+                phase: "complete",
+                type: "progress",
+              });
+            }
+          };
+
           xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
-              const response = JSON.parse(xhr.responseText);
-              onComplete({
-                type: "complete",
-                response,
-                timestamp: new Date(),
-                file: {
-                  name: file.name,
-                  size: file.size,
-                  type: file.type,
-                },
-              });
-              resolve(response);
+              try {
+                const response = JSON.parse(xhr.responseText);
+                const finalResponse = response.data;
+
+                onProgress({
+                  loaded: file.size,
+                  total: file.size,
+                  progress: 100,
+                  phase: "complete",
+                  type: "progress",
+                });
+
+                onComplete({
+                  type: "complete",
+
+                  timestamp: new Date(),
+                  file: {
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                  },
+                });
+                resolve(finalResponse);
+              } catch (e) {
+                const error = new Error(
+                  "Invalid JSON response from complete upload"
+                );
+                onError({
+                  type: "error",
+                  error,
+                  phase: "complete",
+                  status: xhr.status,
+                  timestamp: new Date(),
+                });
+                reject(error);
+              }
             } else {
               reject(
                 new Error(`Complete upload failed with status ${xhr.status}`)
