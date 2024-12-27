@@ -54,7 +54,7 @@ class ApexxCloud {
           xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
               const response = JSON.parse(xhr.responseText);
-              resolve(JSON.parse(response.data.data));
+              resolve(JSON.parse(xhr.responseText));
             } else {
               const error = new Error(
                 `Start upload failed with status ${xhr.status}`
@@ -223,7 +223,7 @@ class ApexxCloud {
                   type: file.type,
                 },
               });
-              resolve(response.data.data);
+              resolve(response);
             } else {
               reject(
                 new Error(`Complete upload failed with status ${xhr.status}`)
@@ -348,7 +348,7 @@ class ApexxCloud {
                   type: file.type,
                 },
               });
-              resolve(response.data.data);
+              resolve(response);
             } catch (e) {
               onComplete({
                 type: "complete",
