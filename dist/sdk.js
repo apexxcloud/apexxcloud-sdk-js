@@ -125,7 +125,7 @@
                 let etag;
                 try {
                   const response = JSON.parse(xhr.responseText);
-                  etag = response.data?.etag || `part${partNumber}`;
+                  etag = response.data?.Etag || `part${partNumber}`;
                 } catch (e) {
                   etag = `part${partNumber}`;
                 }
