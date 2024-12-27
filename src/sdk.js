@@ -138,7 +138,7 @@ class ApexxCloud {
             }
           };
 
-          xhr.open("PUT", partUrl);
+          xhr.open("POST", partUrl);
 
           xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
@@ -229,7 +229,7 @@ class ApexxCloud {
 
           await new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-            xhr.open("POST", cancelUrl);
+            xhr.open("DELETE", cancelUrl);
             xhr.onload = () => (xhr.status < 300 ? resolve() : reject());
             xhr.onerror = () => reject();
             xhr.send();
@@ -283,7 +283,7 @@ class ApexxCloud {
 
       // Return promise for upload completion
       return new Promise((resolve, reject) => {
-        xhr.open("POST", signedUrl);
+        xhr.open("PUT", signedUrl);
 
         // Setup progress tracking
         xhr.upload.onprogress = (event) => {
