@@ -90,8 +90,8 @@ class ApexxCloud {
           );
         });
 
-      const { uploadId } = await startUpload();
-
+      const response = await startUpload();
+      const uploadId = response.data.uploadId;
       // Calculate parts
       const totalParts = Math.ceil(file.size / partSize);
       const parts = [];
