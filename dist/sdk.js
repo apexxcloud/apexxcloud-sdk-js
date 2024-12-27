@@ -120,7 +120,7 @@
                 });
               }
             };
-            xhr.open("PUT", partUrl);
+            xhr.open("POST", partUrl);
             xhr.onload = () => {
               if (xhr.status >= 200 && xhr.status < 300) {
                 const etag = xhr.getResponseHeader("ETag");
@@ -220,7 +220,7 @@
 
         // Return promise for upload completion
         return new Promise((resolve, reject) => {
-          xhr.open("POST", signedUrl);
+          xhr.open("PUT", signedUrl);
 
           // Setup progress tracking
           xhr.upload.onprogress = event => {
