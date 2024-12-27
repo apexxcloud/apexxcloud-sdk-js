@@ -123,7 +123,6 @@ class ApexxCloud {
               const partProgress = event.loaded / event.total;
               const partSize = end - start;
               const partLoaded = partSize * partProgress;
-
               const totalProgress =
                 ((uploadedBytes + partLoaded) / file.size) * 100;
 
@@ -140,9 +139,17 @@ class ApexxCloud {
           };
 
           xhr.open("POST", partUrl);
+
           xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
-              const etag = xhr.getResponseHeader("ETag");
+              let etag;
+              try {
+                const response = JSON.parse(xhr.responseText);
+                etag = response.data?.etag || `part${partNumber}`;
+              } catch (e) {
+                etag = `part${partNumber}`;
+              }
+
               uploadedBytes += chunk.size;
 
               const part = {
