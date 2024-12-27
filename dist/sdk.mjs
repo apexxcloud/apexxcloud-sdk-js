@@ -114,6 +114,7 @@ class ApexxCloud {
             }
           };
           xhr.open("POST", partUrl);
+          xhr.setRequestHeader("Content-Type", "application/octet-stream"); // Add content type for binary data
           xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
               const etag = xhr.getResponseHeader("ETag");
