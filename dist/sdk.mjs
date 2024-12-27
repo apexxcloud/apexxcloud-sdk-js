@@ -42,9 +42,28 @@ class ApexxCloud {
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
           if (xhr.status >= 200 && xhr.status < 300) {
-            resolve(JSON.parse(xhr.responseText));
+            try {
+              resolve(JSON.parse(xhr.responseText));
+            } catch (e) {
+              const error = new Error("Invalid JSON response from start upload");
+              onError({
+                type: "error",
+                error,
+                phase: "start",
+                status: xhr.status,
+                timestamp: new Date()
+              });
+              reject(error);
+            }
           } else {
-            const error = new Error(`Start upload failed with status ${xhr.status}`);
+            let errorMessage;
+            try {
+              const errorResponse = JSON.parse(xhr.responseText);
+              errorMessage = errorResponse.message || `Start upload failed with status ${xhr.status}`;
+            } catch (e) {
+              errorMessage = xhr.responseText || `Start upload failed with status ${xhr.status}`;
+            }
+            const error = new Error(errorMessage);
             onError({
               type: "error",
               error,
@@ -126,7 +145,23 @@ class ApexxCloud {
               onPartComplete(part);
               resolve(part);
             } else {
-              reject(new Error(`Part upload failed with status ${xhr.status}`));
+              let errorMessage;
+              try {
+                const errorResponse = JSON.parse(xhr.responseText);
+                errorMessage = errorResponse.message || `Part upload failed with status ${xhr.status}`;
+              } catch (e) {
+                errorMessage = xhr.responseText || `Part upload failed with status ${xhr.status}`;
+              }
+              const error = new Error(errorMessage);
+              onError({
+                type: "error",
+                error,
+                phase: "upload",
+                partNumber,
+                status: xhr.status,
+                timestamp: new Date()
+              });
+              reject(error);
             }
           };
           xhr.onerror = () => reject(new Error("Part upload failed"));
@@ -154,23 +189,59 @@ class ApexxCloud {
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
           if (xhr.status >= 200 && xhr.status < 300) {
-            const response = JSON.parse(xhr.responseText);
-            onComplete({
-              type: "complete",
-              response,
-              timestamp: new Date(),
-              file: {
-                name: file.name,
-                size: file.size,
-                type: file.type
-              }
-            });
-            resolve(response);
+            try {
+              const response = JSON.parse(xhr.responseText);
+              onComplete({
+                type: "complete",
+                response,
+                timestamp: new Date(),
+                file: {
+                  name: file.name,
+                  size: file.size,
+                  type: file.type
+                }
+              });
+              resolve(response);
+            } catch (e) {
+              const error = new Error("Invalid JSON response from complete upload");
+              onError({
+                type: "error",
+                error,
+                phase: "complete",
+                status: xhr.status,
+                timestamp: new Date()
+              });
+              reject(error);
+            }
           } else {
-            reject(new Error(`Complete upload failed with status ${xhr.status}`));
+            let errorMessage;
+            try {
+              const errorResponse = JSON.parse(xhr.responseText);
+              errorMessage = errorResponse.message || `Complete upload failed with status ${xhr.status}`;
+            } catch (e) {
+              errorMessage = xhr.responseText || `Complete upload failed with status ${xhr.status}`;
+            }
+            const error = new Error(errorMessage);
+            onError({
+              type: "error",
+              error,
+              phase: "complete",
+              status: xhr.status,
+              timestamp: new Date()
+            });
+            reject(error);
           }
         };
-        xhr.onerror = () => reject(new Error("Complete upload failed"));
+        xhr.onerror = () => {
+          const error = new Error("Complete upload failed");
+          onError({
+            type: "error",
+            error,
+            phase: "complete",
+            timestamp: new Date()
+          });
+          reject(error);
+        };
         xhr.send(JSON.stringify({
           parts: parts.sort((a, b) => a.PartNumber - b.PartNumber)
         }));
