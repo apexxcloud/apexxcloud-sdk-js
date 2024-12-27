@@ -1,6 +1,6 @@
 {
   "name": "@apexxcloud/sdk-js",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Official JavaScript SDK for ApexxCloud Storage Service",
   "main": "dist/sdk.js",
   "module": "dist/sdk.mjs",
