@@ -206,37 +206,25 @@
           };
           xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
-              try {
-                const response = JSON.parse(xhr.responseText);
-                const finalResponse = response.data;
-                onProgress({
-                  loaded: file.size,
-                  total: file.size,
-                  progress: 100,
-                  phase: "complete",
-                  type: "progress"
-                });
-                onComplete({
-                  type: "complete",
-                  timestamp: new Date(),
-                  file: {
-                    name: file.name,
-                    size: file.size,
-                    type: file.type
-                  }
-                });
-                resolve(response);
-              } catch (e) {
-                const error = new Error("Invalid JSON response from complete upload");
-                onError({
-                  type: "error",
-                  error,
-                  phase: "complete",
-                  status: xhr.status,
-                  timestamp: new Date()
-                });
-                reject(error);
-              }
+              const response = JSON.parse(xhr.responseText);
+              onProgress({
+                loaded: file.size,
+                total: file.size,
+                progress: 100,
+                phase: "complete",
+                type: "progress"
+              });
+              onComplete({
+                type: "complete",
+                response,
+                timestamp: new Date(),
+                file: {
+                  name: file.name,
+                  size: file.size,
+                  type: file.type
+                }
+              });
+              resolve(response);
             } else {
               reject(new Error(`Complete upload failed with status ${xhr.status}`));
             }
