@@ -265,7 +265,7 @@ class ApexxCloud {
                     type: file.type,
                   },
                 });
-                resolve(finalResponse);
+                resolve(response);
               } catch (e) {
                 const error = new Error(
                   "Invalid JSON response from complete upload"
