@@ -1,6 +1,6 @@
 {
   "name": "@apexxcloud/sdk-js",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "Official JavaScript SDK for ApexxCloud Storage Service",
   "main": "dist/sdk.js",
   "module": "dist/sdk.mjs",
@@ -44,6 +44,6 @@
     "globals": "^15.14.0",
     "jest": "^29.7.0",
     "rollup": "^2.79.2",
-     "typescript": "^5.0.0"
+    "typescript": "^5.0.0"
   }
 }
