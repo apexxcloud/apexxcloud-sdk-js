@@ -29,12 +29,16 @@ declare module '@apexxcloud/sdk-js' {
     progress: number;
   }
 
-  interface MultipartProgressEvent extends ProgressEvent {
+  interface MultipartProgressEvent extends BaseEvent {
     type: 'progress';
+    loaded: number;
+    total: number;
+    progress: number;
     part: {
       number: number;
       progress: number;
     };
+    phase?: 'complete';
   }
 
   interface StartEvent extends BaseEvent {
@@ -53,6 +57,7 @@ declare module '@apexxcloud/sdk-js' {
     error: Error;
     status?: number;
     phase?: 'start' | 'upload' | 'complete' | 'cancel';
+    partNumber?: number;
   }
 
   interface UploadOptions {

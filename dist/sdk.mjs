@@ -19,6 +19,20 @@ class ApexxCloud {
     signal,
     concurrency = 3
   } = {}) {
+    let activeXHRs = new Set();
+    const cleanup = () => {
+      activeXHRs.forEach(xhr => xhr.abort());
+      activeXHRs.clear();
+    };
+    signal?.addEventListener("abort", () => {
+      cleanup();
+      onError({
+        type: "abort",
+        error: new Error("Upload aborted"),
+        phase: "upload",
+        timestamp: new Date()
+      });
+    });
     try {
       // Start multipart upload
       const startUrl = await getSignedUrl("start-multipart", {
@@ -28,6 +42,7 @@ class ApexxCloud {
       });
       const startUpload = () => new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
+        activeXHRs.add(xhr);
         if (signal?.aborted) {
           onError({
             type: "abort",
@@ -41,6 +56,7 @@ class ApexxCloud {
         xhr.open("POST", startUrl);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
+          activeXHRs.delete(xhr);
           if (xhr.status >= 200 && xhr.status < 300) {
             const response = JSON.parse(xhr.responseText);
             resolve(JSON.parse(xhr.responseText));
@@ -57,6 +73,7 @@ class ApexxCloud {
           }
         };
         xhr.onerror = () => {
+          activeXHRs.delete(xhr);
           const error = new Error("Start upload failed");
           onError({
             type: "error",
@@ -92,6 +109,7 @@ class ApexxCloud {
         });
         return new Promise((resolve, reject) => {
           const xhr = new XMLHttpRequest();
+          activeXHRs.add(xhr);
           if (signal?.aborted) {
             reject(new Error("Upload aborted"));
             return;
@@ -115,6 +133,7 @@ class ApexxCloud {
           };
           xhr.open("POST", partUrl);
           xhr.onload = () => {
+            activeXHRs.delete(xhr);
             if (xhr.status >= 200 && xhr.status < 300) {
               try {
                 const response = JSON.parse(xhr.responseText);
@@ -158,7 +177,10 @@ class ApexxCloud {
               reject(error);
             }
           };
-          xhr.onerror = () => reject(new Error("Part upload failed"));
+          xhr.onerror = () => {
+            activeXHRs.delete(xhr);
+            reject(new Error("Part upload failed"));
+          };
           const formData = new FormData();
           formData.append("file", chunk, file.name);
           xhr.send(formData);
@@ -181,6 +203,7 @@ class ApexxCloud {
       });
       const completeUpload = () => new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
+        activeXHRs.add(xhr);
         xhr.open("POST", completeUrl);
         xhr.setRequestHeader("Content-Type", "application/json");
 
@@ -199,6 +222,7 @@ class ApexxCloud {
           }
         };
         xhr.onload = () => {
+          activeXHRs.delete(xhr);
           if (xhr.status >= 200 && xhr.status < 300) {
             const response = JSON.parse(xhr.responseText);
             onProgress({
@@ -223,13 +247,17 @@ class ApexxCloud {
             reject(new Error(`Complete upload failed with status ${xhr.status}`));
           }
         };
-        xhr.onerror = () => reject(new Error("Complete upload failed"));
+        xhr.onerror = () => {
+          activeXHRs.delete(xhr);
+          reject(new Error("Complete upload failed"));
+        };
         xhr.send(JSON.stringify({
           parts: parts.sort((a, b) => a.PartNumber - b.PartNumber)
         }));
       });
       return await completeUpload();
     } catch (error) {
+      cleanup();
       onError({
         type: "error",
         error,
@@ -253,8 +281,6 @@ class ApexxCloud {
         mimeType: file.type
       });
       const xhr = new XMLHttpRequest();
-
-      // Setup abort signal handler
       if (signal?.aborted) {
         onError({
           type: "abort",
@@ -263,7 +289,14 @@ class ApexxCloud {
         });
         throw new Error("Upload aborted");
       }
-      signal?.addEventListener("abort", () => xhr.abort());
+      signal?.addEventListener("abort", () => {
+        xhr.abort();
+        onError({
+          type: "abort",
+          error: new Error("Upload aborted"),
+          timestamp: new Date()
+        });
+      });
 
       // Return promise for upload completion
       return new Promise((resolve, reject) => {
