@@ -10,6 +10,22 @@ class ApexxCloud {
       uploadMultipart: this.uploadMultipart.bind(this)
     };
   }
+
+  /**
+   * Uploads a file using multipart upload strategy, suitable for large files.
+   * @param {File} file - The file to upload
+   * @param {Function} getSignedUrl - Callback function to get signed URLs for different upload phases
+   * @param {Object} options - Upload configuration options
+   * @param {Function} [options.onProgress] - Progress callback function
+   * @param {Function} [options.onPartComplete] - Callback function called when each part is uploaded
+   * @param {Function} [options.onComplete] - Callback function called when upload is complete
+   * @param {Function} [options.onError] - Error callback function
+   * @param {number} [options.partSize=5242880] - Size of each part in bytes (default: 5MB)
+   * @param {AbortSignal} [options.signal] - AbortSignal to cancel the upload
+   * @param {number} [options.concurrency=3] - Number of concurrent part uploads
+   * @returns {Promise<Object>} Upload completion response
+   * @throws {Error} If upload fails or is aborted
+   */
   async uploadMultipart(file, getSignedUrl, {
     onProgress = () => {},
     onPartComplete = () => {},
@@ -267,6 +283,20 @@ class ApexxCloud {
       throw error;
     }
   }
+
+  /**
+   * Uploads a file using single request strategy, suitable for smaller files.
+   * @param {File} file - The file to upload
+   * @param {Function} getSignedUrl - Callback function to get signed URL for upload
+   * @param {Object} options - Upload configuration options
+   * @param {Function} [options.onProgress] - Progress callback function
+   * @param {Function} [options.onComplete] - Callback function called when upload is complete
+   * @param {Function} [options.onError] - Error callback function
+   * @param {Function} [options.onStart] - Callback function called when upload starts
+   * @param {AbortSignal} [options.signal] - AbortSignal to cancel the upload
+   * @returns {Promise<Object>} Upload completion response
+   * @throws {Error} If upload fails or is aborted
+   */
   async uploadFile(file, getSignedUrl, {
     onProgress = () => {},
     onComplete = () => {},

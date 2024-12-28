@@ -10,7 +10,7 @@
       "require": "./dist/sdk.js"
     }
   },
-  "types": "types/index.d.ts",
+  "types": "./types/index.d.ts",
   "files": [
     "dist",
     "types",
@@ -43,6 +43,7 @@
     "eslint": "^8.57.1",
     "globals": "^15.14.0",
     "jest": "^29.7.0",
-    "rollup": "^2.79.2"
+    "rollup": "^2.79.2",
+     "typescript": "^5.0.0"
   }
 }

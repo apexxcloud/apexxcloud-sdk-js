@@ -85,17 +85,17 @@ declare module '@apexxcloud/sdk-js' {
     });
     
     files: {
-      upload(
+      upload: (
         file: File,
         getSignedUrl: GetSignedUrlFn,
         options?: UploadOptions
-      ): Promise<any>;
+      ) => Promise<any>;
       
-      uploadMultipart(
+      uploadMultipart: (
         file: File,
         getSignedUrl: GetSignedUrlFn,
         options?: MultipartUploadOptions
-      ): Promise<any>;
+      ) => Promise<any>;
     };
   }
 } 
